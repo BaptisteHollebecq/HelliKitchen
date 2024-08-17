@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Helicopter.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -16,15 +15,17 @@ AHelicopter::AHelicopter()
 	Origin = CreateDefaultSubobject<UBoxComponent>(TEXT("Origin"));
 	SetRootComponent(Origin);
 
-
 	Body = CreateDefaultSubobject<USceneComponent>(TEXT("BodyOrigin"));
+	LargeBlade = CreateDefaultSubobject<USceneComponent>(TEXT("LargeBlade"));
+	SmallBlade = CreateDefaultSubobject<USceneComponent>(TEXT("SmallBlade"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 
 	Body->SetupAttachment(RootComponent);
 	SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(SpringArm);
-
+	SmallBlade->SetupAttachment(Body);
+	LargeBlade->SetupAttachment(Body);
 }
 
 // Called when the game starts or when spawned
@@ -32,12 +33,21 @@ void AHelicopter::BeginPlay()
 {
 	Super::BeginPlay();
 	Inertie = FVector(0, 0, 0);
+	BladeTurningRotator = BladeSpeed;
 }
 
 // Called every frame
 void AHelicopter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//Blade Rotation
+	LargeBlade->SetRelativeRotation(FRotator(0, BladeTurningRotator, 0));
+	SmallBlade->SetRelativeRotation(FRotator(BladeTurningRotator, 0, 0));
+
+	BladeTurningRotator += BladeSpeed;
+	if (BladeTurningRotator > 360)
+		BladeTurningRotator -= 360;
 
 	if (MovementDirection.X < StickDeadZone && MovementDirection.X > -StickDeadZone)
 		MovementDirection.X = 0;

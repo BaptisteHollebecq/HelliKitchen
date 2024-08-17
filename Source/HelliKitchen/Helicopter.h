@@ -53,11 +53,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HelicoSettings | Properties")
 	float TurnSpeed = .75f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HelicoSettings | Properties")
+	float BladeSpeed = 5;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HelicoSettings | Properties")
 	FVector2D CameraClamp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* Body;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* LargeBlade;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* SmallBlade;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* Origin;
@@ -76,6 +85,7 @@ private:
 	float ThrustInertie;
 	float ThrustingDirection;
 	float CurrentAcceleration = 0;
+	float BladeTurningRotator;
 
 
 public:
