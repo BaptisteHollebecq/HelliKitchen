@@ -20,12 +20,19 @@ AHelicopter::AHelicopter()
 	SmallBlade = CreateDefaultSubobject<USceneComponent>(TEXT("SmallBlade"));
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Claw = CreateDefaultSubobject<UChildActorComponent>(TEXT("ClawOrigin"));
+	GrabAnchor = CreateDefaultSubobject<USceneComponent>(TEXT("GrabAnchor"));
 
 	Body->SetupAttachment(RootComponent);
 	SpringArm->SetupAttachment(RootComponent);
 	Camera->SetupAttachment(SpringArm);
 	SmallBlade->SetupAttachment(Body);
 	LargeBlade->SetupAttachment(Body);
+
+	Claw->SetupAttachment(RootComponent);
+	Claw->SetChildActorClass(AClaw::StaticClass());
+
+	GrabAnchor->SetupAttachment(Claw);
 }
 
 // Called when the game starts or when spawned
@@ -34,12 +41,21 @@ void AHelicopter::BeginPlay()
 	Super::BeginPlay();
 	Inertie = FVector(0, 0, 0);
 	BladeTurningRotator = BladeSpeed;
+
+	ClawRef = Cast<AClaw>(Claw->GetChildActor());
 }
 
 // Called every frame
 void AHelicopter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//Move Grabbed Props
+	if (GrabbedProps != nullptr)
+	{
+		GrabbedProps->SetActorLocation(GrabAnchor->GetComponentLocation());
+		GrabbedProps->SetActorRotation(GrabAnchor->GetComponentRotation());
+	}
 
 	//Blade Rotation
 	LargeBlade->SetRelativeRotation(FRotator(0, BladeTurningRotator, 0));
@@ -132,6 +148,9 @@ void AHelicopter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PEI->BindAction(DAHelicoInputs->InputDown, ETriggerEvent::Started, this, &AHelicopter::StopUp);
 	PEI->BindAction(DAHelicoInputs->InputDown, ETriggerEvent::Canceled, this, &AHelicopter::StartUp);
 	PEI->BindAction(DAHelicoInputs->InputDown, ETriggerEvent::Completed, this, &AHelicopter::StartUp);
+
+	PEI->BindAction(DAHelicoInputs->InputClaw, ETriggerEvent::Started, this, &AHelicopter::ClawAction);
+
 }
 
 void AHelicopter::Move(const FInputActionValue& Value)
@@ -155,6 +174,23 @@ void AHelicopter::StartUp()
 void AHelicopter::StopUp()
 {
 	ThrustingDirection -= 1;
+}
+
+void AHelicopter::ClawAction()
+{
+	if (ClawRef->CatchableInRange)
+	{
+		if (GrabbedProps == nullptr)
+		{
+			GrabbedProps = Cast<AProps>(ClawRef->InRangeRef);
+			GrabbedProps->ManagePhysics(false);
+		}
+		else
+		{
+			GrabbedProps->ManagePhysics(true);
+			GrabbedProps = nullptr;
+		}
+	}
 }
 
 void AHelicopter::Look(const FInputActionValue& Value)

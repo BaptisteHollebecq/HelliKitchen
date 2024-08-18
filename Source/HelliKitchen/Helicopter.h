@@ -9,7 +9,10 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Components/ChildActorComponent.h"
 #include <Components/BoxComponent.h>
+#include "Props.h"
+#include "Claw.h"
 
 #include "Helicopter.generated.h"
 
@@ -59,8 +62,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HelicoSettings | Properties")
 	FVector2D CameraClamp;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HelicoSettings | ClawSettings")
+	FRotator ArmRotation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HelicoSettings | ClawSettings")
+	float ArmLength;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HelicoSettings | ClawSettings")
+	FRotator CamRotation;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* Body;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UChildActorComponent* Claw;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USceneComponent* GrabAnchor;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	USceneComponent* LargeBlade;
@@ -82,10 +100,19 @@ private:
 	FVector MovementDirection;
 	FVector Inertie;
 	FVector LeaningDirection;
+
+	FRotator BaseArmRot;
+	FRotator BaseCamRot;
+	float BaseArmLength;
+
 	float ThrustInertie;
 	float ThrustingDirection;
 	float CurrentAcceleration = 0;
 	float BladeTurningRotator;
+
+
+	AClaw* ClawRef;
+	AProps* GrabbedProps;
 
 
 public:
@@ -101,6 +128,8 @@ public:
 	void StopMove();
 	void StartUp();
 	void StopUp();
+	void ClawAction();
+
 
 	// Handle look input
 	void Look(const FInputActionValue& Value);
