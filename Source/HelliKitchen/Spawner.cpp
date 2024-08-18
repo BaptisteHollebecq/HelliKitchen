@@ -31,4 +31,3 @@ void ASpawner::SpawnIngredient(TSubclassOf<AProps> ToSpawn)
 
 	GetWorld()->SpawnActor<AProps>(ToSpawn, GetActorTransform(), SpawnInfos);
 }
-
