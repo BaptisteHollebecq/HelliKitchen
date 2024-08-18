@@ -36,6 +36,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	bool CatchableInRange = false;
+	bool isUsed = false;
 	AProps* InRangeRef;
 
 

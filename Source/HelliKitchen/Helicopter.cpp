@@ -178,17 +178,19 @@ void AHelicopter::StopUp()
 
 void AHelicopter::ClawAction()
 {
-	if (ClawRef->CatchableInRange)
+
+	if (GrabbedProps != nullptr)
+	{
+		GrabbedProps->ManagePhysics(true);
+		GrabbedProps = nullptr;
+	}
+	else if (ClawRef->CatchableInRange)
 	{
 		if (GrabbedProps == nullptr)
 		{
 			GrabbedProps = Cast<AProps>(ClawRef->InRangeRef);
 			GrabbedProps->ManagePhysics(false);
-		}
-		else
-		{
-			GrabbedProps->ManagePhysics(true);
-			GrabbedProps = nullptr;
+			GrabAnchor->SetRelativeLocation(GrabbedProps->OriginLocation);
 		}
 	}
 }

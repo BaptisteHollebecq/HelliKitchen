@@ -30,7 +30,7 @@ void AClaw::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other
 {
 	UCatchable* isCatchable = OtherActor->FindComponentByClass<UCatchable>();
 
-	if (isCatchable != nullptr)
+	if (isCatchable != nullptr && !isUsed)
 	{
 		CatchableInRange = true;
 		InRangeRef = Cast<AProps>(OtherActor);
@@ -41,7 +41,7 @@ void AClaw::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 {
 	UCatchable* isCatchable = OtherActor->FindComponentByClass<UCatchable>();
 
-	if (isCatchable != nullptr)
+	if (isCatchable != nullptr && !isUsed)
 	{
 		CatchableInRange = false;
 		InRangeRef = nullptr;

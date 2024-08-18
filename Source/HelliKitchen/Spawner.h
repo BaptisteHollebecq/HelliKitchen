@@ -4,33 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Catchable.h"
 
-#include "Props.generated.h"
+#include "Props.h"
+#include "Spawner.generated.h"
 
 UCLASS()
-class HELLIKITCHEN_API AProps : public AActor
+class HELLIKITCHEN_API ASpawner : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AProps();
+	ASpawner();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* PropsMesh;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void ManagePhysics(bool physic);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector OriginLocation;
+	void SpawnIngredient(TSubclassOf<AProps> ToSpawn);
 
 };
